@@ -152,9 +152,23 @@ Feed.prototype._onextension = function (data, start, end) {
   else this.emit('extension', name, message)
 }
 
+const typeNames = {
+  1: 'handshake',
+  2: 'info',
+  3: 'have',
+  4: 'unhave',
+  5: 'want',
+  6: 'unwant',
+  7: 'request',
+  8: 'cancel',
+  9: 'data',
+  15: 'extension'
+}
+
 Feed.prototype._onmessage = function (type, data, start, end) {
   var message = decodeMessage(type, data, start, end)
   if (!message || this.closed) return
+  console.log(`Jim protocol in ${type}-${typeNames[type]}:\n`, message)
 
   if (type === 1) return this.stream._onhandshake(message)
 
@@ -198,6 +212,8 @@ Feed.prototype._emit = function (type, message) {
 }
 
 Feed.prototype._send = function (type, enc, message) {
+
+  console.log(`Jim protocol out ${type}-${typeNames[type]}:\n`, message)
   var header = this.header | type
   var len = this.headerLength + enc.encodingLength(message)
   var box = bufferAlloc(varint.encodingLength(len) + len)

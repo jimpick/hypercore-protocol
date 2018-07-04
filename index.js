@@ -7,6 +7,7 @@ var feed = require('./feed')
 var messages = require('./messages')
 var bufferAlloc = require('buffer-alloc-unsafe')
 var bufferFrom = require('buffer-from')
+var prettyHash = require('pretty-hash')
 
 module.exports = Protocol
 
@@ -142,6 +143,9 @@ Protocol.prototype.feed = function (key, opts) {
       this._resume()
     }
   }
+  console.log(`Jim protocol out 0-feed id: ${prettyHash(this.id)} ` +
+              `dk: ${prettyHash(feed.discoveryKey)} ` +
+              `nonce: ${prettyHash(feed.nonce)}`)
 
   var box = encodeFeed(feed, ch.id)
   if (!feed.nonce && this.encrypted) this._xor.update(box, box)
@@ -285,6 +289,9 @@ Protocol.prototype._onhandshake = function (handshake) {
 
 Protocol.prototype._onopen = function (id, data, start, end) {
   var feed = decodeFeed(data, start, end)
+  console.log(`Jim protocol in 0-feed id: ${id} ` +
+              `dk: ${prettyHash(feed.discoveryKey)} ` +
+              `nonce: ${prettyHash(feed.nonce)}`)
 
   if (!feed) return this._badFeed()
 
