@@ -35,6 +35,7 @@ function Protocol (opts) {
   this.expectedFeeds = opts.expectedFeeds || 0
   this.extensions = opts.extensions || []
   this.remoteExtensions = null
+  this.broadcast = opts.broadcast
 
   this._localFeeds = []
   this._remoteFeeds = []
