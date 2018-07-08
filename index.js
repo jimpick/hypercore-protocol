@@ -144,9 +144,11 @@ Protocol.prototype.feed = function (key, opts) {
       this._resume()
     }
   }
+  /*
   console.log(`Jim protocol out 0-feed id: ${prettyHash(this.id)} ` +
               `dk: ${prettyHash(feed.discoveryKey)} ` +
               `nonce: ${prettyHash(feed.nonce)}`)
+  */
 
   var box = encodeFeed(feed, ch.id)
   if (!feed.nonce && this.encrypted) this._xor.update(box, box)
@@ -255,10 +257,12 @@ Protocol.prototype._push = function (data) {
   if (this.destroyed) return
   this._keepAlive = 0
   if (this._xor) this._xor.update(data, data)
+  // console.log('Jim hypercore-protocol _push', this.label, data)
   return this.push(data)
 }
 
 Protocol.prototype._write = function (data, enc, cb) {
+  // console.log('Jim hypercore-protocol _write', this.label, data)
   this._remoteKeepAlive = 0
   this._parse(data, 0, cb)
 }
@@ -290,9 +294,11 @@ Protocol.prototype._onhandshake = function (handshake) {
 
 Protocol.prototype._onopen = function (id, data, start, end) {
   var feed = decodeFeed(data, start, end)
+  /*
   console.log(`Jim protocol in 0-feed id: ${id} ` +
               `dk: ${prettyHash(feed.discoveryKey)} ` +
               `nonce: ${prettyHash(feed.nonce)}`)
+  */
 
   if (!feed) return this._badFeed()
 
@@ -330,6 +336,7 @@ Protocol.prototype._onmessage = function (data, start, end) {
   var id = header >> 4
   var type = header & 15
 
+  // console.log('Jim hypercore-protocol _onMessage', id, type, this._remoteFeeds.length)
   if (id >= 128) return this._tooManyFeeds()
   while (this._remoteFeeds.length < id) this._remoteFeeds.push(null)
 
